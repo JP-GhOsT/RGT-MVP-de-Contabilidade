@@ -1,0 +1,607 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - RGT</title>
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <style>
+    :root {
+      --cor-fundo-escuro: #000000;
+      --cor-texto-escuro: #ffffff;
+      --cor-fundo-claro: #ffffff;
+      --cor-texto-claro: #1e1e1e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Inter, sans-serif;
+      background-color: var(--cor-fundo-escuro);
+      color: var(--cor-texto-escuro);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .layout {
+      display: flex;
+      flex: 1;
+      width: 100%;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .menu-lateral {
+      background-color: #000000;
+      background-size: cover;
+      color: white;
+      width: 300px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 2;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 1;
+      overflow-y: auto;
+    }
+
+    .menu-lateral.hidden {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+
+    .fechar-menu {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .botao {
+      background: #191919;
+      border: none;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      text-align: center;
+      width: 100%;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 5px;
+    }
+
+    .botao:hover {
+      background: #444;
+      animation: glow 2s infinite;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 5px red; }
+      25% { box-shadow: 0 0 10px orange; }
+      50% { box-shadow: 0 0 15px lime; }
+      75% { box-shadow: 0 0 10px cyan; }
+      100% { box-shadow: 0 0 5px red; }
+    }
+
+    .botao i {
+      vertical-align: middle;
+      margin-right: 8px;
+      height: 1em;
+    }
+
+    .botao-container {
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      bottom: 40px;
+      left: 0;
+      right: 0;
+      z-index: 3;
+      gap: 10px;
+      width: calc(100% - 40px);
+      margin: 0 20px;
+      box-sizing: border-box;
+    }
+
+    .botao-container .botao {
+      width: 48%;
+    }
+
+    .submenu {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-left: 10px;
+      width: 100%;
+    }
+
+    .submenu.mostrar {
+      display: flex;
+    }
+
+    .logo {
+      width: 100%;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    .conteudo {
+      flex: 1;
+      overflow-y: auto;
+      background: url('https://img.freepik.com/vetores-gratis/copie-o-fundo-digital-dos-circuitos-azuis-do-espaco_23-2148821699.jpg?t=st=1746715455~exp=1746719055~hmac=5f752f8d983ca8b48f83af836dc986462eeb173ebf5e61193afd4b009fff1c57&w=996') no-repeat center center;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center; /* Centralizando vertical e horizontalmente */
+      padding: 20px;
+      position: relative;
+    }
+
+    .logo-topo {
+      width: 220px;
+      height: auto;
+      margin-top: 40px;
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #1e1e1e;
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .toggle-btn.hide {
+      display: none;
+    }
+
+    .tema-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #1e1e1e;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .caixa-texto {
+      background: rgba(30, 30, 30, 0.85);
+      color: white;
+      padding: 40px;
+      border-radius: 12px;
+      max-width: 500px; /* Definindo uma largura fixa */
+      width: 100%;
+      text-align: center;
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .caixa-texto h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    .caixa-texto p {
+      font-size: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .campo-input {
+      width: 100%;
+      padding: 12px 30px 12px 12px; /* Ajuste do padding para criar espaço à direita */
+      margin: 15px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    .campo-input-container {
+      position: relative;
+      width: 100%;
+    }
+    .botao-entrar {
+      background-color: #333131;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      width: 80%;
+    }
+
+    .botao-entrar:hover {
+      background-color: #444;
+    }
+
+    .cadastro {
+      font-size: 1rem;
+      color: white;
+      margin-top: 20px;
+    }
+
+    .cadastro a {
+      color: #1e90ff;
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      .menu-lateral {
+        width: 100%;
+        min-width: unset;
+        padding: 20px;
+      }
+
+      .caixa-texto {
+        padding: 20px;
+      }
+
+      .caixa-texto h2 {
+        font-size: 1.5rem;
+      }
+
+      .caixa-texto p {
+        font-size: 1rem;
+      }
+
+      .botao-container {
+        flex-direction: column;
+        gap: 10px;
+        bottom: 20px;
+        width: calc(100% - 40px);
+        margin: 0 20px;
+      }
+
+      .botao-container .botao {
+        width: 100%;
+      }
+    }
+
+    .card-container {
+      perspective: 1000px;
+      width: 100%;
+      max-width: 500px;
+      height: 360px;
+      position: relative;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+      position: relative;
+    }
+
+    .card.girar {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      background: rgba(30, 30, 30, 0.85);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+      border-radius: 12px;
+    } 
+
+    .card-face.back {
+      transform: rotateY(180deg);
+    }
+
+    .card-face h2 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+
+    .trocar-link {
+      margin-top: 20px;
+      font-size: 1rem;
+    }
+
+    .trocar-link a {
+      color: #1e90ff;
+      text-decoration: none;
+    }
+
+    .trocar-link a:hover {
+      text-decoration: underline;
+    }
+    
+    .tab-bar {
+      display: flex;
+      width: 100%;
+      margin-bottom: 20px;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .tab-btn {
+      background-color: #333131;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+
+    .tab-btn.ativo {
+      background-color: #1e90ff;
+    }
+
+    .formulario-container {
+      width: 100%;
+      transition: all 0.4s ease;
+    }
+
+    .formulario {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .formulario.oculto {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .tab-bar {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+
+    .tab-btn {
+      background-color: #333131;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+
+    .tab-btn.ativo {
+      background-color: #1e90ff;
+    }
+    
+    .mostrar-senha {
+      background: transparent;
+      border: none;
+      color: #333; /* Cor para o ícone */
+      cursor: pointer;
+      position: absolute;
+      right: 10px; /* Alinha o ícone no canto direito dentro do campo */
+      top: 50%;
+      transform: translateY(-50%); /* Centraliza verticalmente o ícone */
+      font-size: 1.2rem;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+
+    .mostrar-senha:hover {
+      color: #1e90ff; /* Efeito de hover */
+    }
+      
+    .toggle-btn:hover {
+      background-color: #444;
+      transform: scale(1.1);
+      transition: background-color 0.3s, transform 0.2s;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div id="menuLateral" class="menu-lateral hidden">
+      <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+      <img class="logo" src="{% static 'images/gptgenio.png' %}" alt="Logo RGT" />
+      <a href="{% url 'home' %}" class="botao">
+        <i data-feather="home"></i><span> Home</span>
+      </a>
+      <a class="botao" href="https://www.youtube.com/@RGT.tech12">
+        <i data-feather="play-circle"></i><span> Tutorial</span>
+      </a>
+      <button class="botao" onclick="location.href='{% url 'contato' %}'">
+        <i data-feather="mail"></i><span> Contato</span>
+      </button>
+    </div>
+
+    <div class="conteudo">
+      <button id="toggleBtn" class="toggle-btn" onclick="toggleMenu()">☰</button>
+      <button id="temaBtn" class="tema-btn" onclick="alternarTema()">🌙</button>
+     <div class="caixa-texto" id="card">
+  <div class="tab-bar">
+    <button class="tab-btn ativo" onclick="girarPara('login')">Login</button>
+    <button class="tab-btn" onclick="girarPara('cadastro')">Cadastro</button>
+  </div>
+
+  <div class="card-container">
+    <div class="card" id="card-inner">
+      <!-- FACE LOGIN -->
+      <div class="card-face front">
+        <h2>Login</h2>
+        <form method="POST" action="{% url 'login' %}">
+          {% csrf_token %}
+          <input type="email" name="email" class="campo-input" placeholder="Email" required />
+          <div class="campo-input-container">
+            <input type="password" id="senha-login" name="senha" class="campo-input" placeholder="Senha" required />
+            <button type="button" class="mostrar-senha" onclick="togglePasswordVisibility('senha-login', this)">
+              <i data-feather="eye"></i>
+            </button>
+          </div>
+          <button type="submit" class="botao-entrar">Entrar</button>
+          <div class="trocar-link">
+            <a href="{% url 'password_reset' %}">Esqueci minha senha?</a>
+          </div>
+          {% if messages %}
+            <ul>
+              {% for message in messages %}
+                <li style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">
+                  {{ message }}
+                </li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+        </form>
+      </div>
+
+      <!-- FACE CADASTRO -->
+      <div class="card-face back">
+        <h2>Cadastro</h2>
+        <form method="POST" action="{% url 'cadastrar' %}">
+          {% csrf_token %}
+          <input type="text" name="nome" class="campo-input" placeholder="Nome completo" required />
+          <input type="email" name="email" class="campo-input" placeholder="Email" required />
+          <div class="campo-input-container">
+            <input type="password" id="senha-cadastro" name="senha" class="campo-input" placeholder="Senha" required />
+            <button type="button" class="mostrar-senha" onclick="togglePasswordVisibility('senha-cadastro', this)">
+              <i data-feather="eye"></i>
+            </button>
+          </div>
+          <button type="submit" class="botao-entrar">Cadastrar</button>
+          {% if messages %}
+            <ul>
+              {% for message in messages %}
+                <li style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">
+                  {{ message }}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script>
+    feather.replace();
+
+    function toggleMenu() {
+      const menu = document.getElementById("menuLateral");
+      const btn = document.getElementById("toggleBtn");
+      menu.classList.toggle("hidden");
+      btn.classList.toggle("hide");
+    }
+
+    function alternarTema() {
+      const body = document.body;
+      const caixaTexto = document.querySelector('.caixa-texto');
+      const temaBtn = document.getElementById("temaBtn");
+
+      const isClaro = body.style.backgroundColor === 'var(--cor-fundo-claro)' || body.style.backgroundColor === 'rgb(255, 255, 255)';
+
+      if (isClaro) {
+        body.style.backgroundColor = 'var(--cor-fundo-escuro)';
+        body.style.color = 'var(--cor-texto-escuro)';
+        caixaTexto.style.backgroundColor = 'rgba(30, 30, 30, 0.85)';
+        caixaTexto.style.color = '#fff';
+        temaBtn.textContent = '🌙';
+      } else {
+        body.style.backgroundColor = 'var(--cor-fundo-claro)';
+        body.style.color = 'var(--cor-texto-claro)';
+        caixaTexto.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+        caixaTexto.style.color = '#000';
+        temaBtn.textContent = '☀';
+      }
+    }
+
+      function girarPara(destino) {
+        const card = document.getElementById('card-inner');
+        const botoes = document.querySelectorAll('.tab-btn');
+
+        if (destino === 'cadastro') {
+          card.classList.add('girar');
+        } else {
+          card.classList.remove('girar');
+        }
+
+        // Ativa visual nos botões
+        botoes.forEach(btn => btn.classList.remove('ativo'));
+        document.querySelector(`.tab-btn[onclick="girarPara('${destino}')"]`).classList.add('ativo');
+
+      }
+    
+        function togglePasswordVisibility(id, btn) {
+          const input = document.getElementById(id);
+          const iconContainer = btn;
+
+          // Remove ícone atual
+          iconContainer.innerHTML = '';
+
+          if (input.type === 'password') {
+            input.type = 'text';
+            iconContainer.innerHTML = '<i data-feather="eye-off"></i>';
+          } else {
+            input.type = 'password';
+            iconContainer.innerHTML = '<i data-feather="eye"></i>';
+          }
+
+        feather.replace();
+      }
+
+
+  </script>
+</body>
+</html>

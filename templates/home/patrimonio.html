@@ -1,0 +1,473 @@
+{% load static %}
+{% load user_groups %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Patrimônio - RGT</title>
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <style>
+    :root {
+      --cor-fundo-escuro: #000000;
+      --cor-texto-escuro: #ffffff;
+      --cor-fundo-claro: #ffffff;
+      --cor-texto-claro: #1e1e1e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, sans-serif;
+      background-color: var(--cor-fundo-escuro);
+      color: var(--cor-texto-escuro);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .layout {
+      display: flex;
+      flex: 1;
+      width: 100%;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .menu-lateral {
+      background-color: #000000;
+      background-size: cover;
+      color: white;
+      width: 300px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 2;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 1;
+      overflow-y: auto;
+    }
+
+    .menu-lateral.hidden {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+
+    .fechar-menu {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 3;
+    }
+    
+    .botao-menu {
+      background: #191919;
+      border: none;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      text-align: left;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.3s ease;
+      margin-bottom: 8px;
+    }
+
+    .botao-menu:hover {
+      background: #333333;
+      /* sem animações glow */
+    }
+
+    .botao-menu i {
+      height: 1em;
+      vertical-align: middle;
+    }
+
+    .botao {
+      background: #191919;
+      border: none;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      text-align: center;
+      width: 100%;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 5px;
+    }
+
+    .botao:hover {
+      background: #444;
+      animation: glow 2s infinite;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 5px red; }
+      25% { box-shadow: 0 0 10px orange; }
+      50% { box-shadow: 0 0 15px lime; }
+      75% { box-shadow: 0 0 10px cyan; }
+      100% { box-shadow: 0 0 5px red; }
+    }
+
+    .botao i {
+      vertical-align: middle;
+      margin-right: 8px;
+      height: 1em;
+    }
+
+    .botao-container {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    .submenu {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-left: 10px;
+      width: 100%;
+    }
+
+    .submenu.mostrar {
+      display: flex;
+    }
+
+    .logo {
+      width: 100%;
+      height: auto;
+      margin-top: -30px;
+      margin-bottom: -50px;
+    }
+
+    .conteudo {
+      flex: 1;
+      overflow-y: auto;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      position: relative;
+    }
+
+    .logo-topo {
+      width: 300px;
+      height: auto;
+      margin-top: 20px;
+      margin-bottom: -50px;
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #1e1e1e;
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 3;
+      transition: background 0.3s;
+    }
+
+    .toggle-btn:hover {
+      background-color: #444;
+      transform: scale(1.1);
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .toggle-btn.hide {
+      display: none;
+    }
+
+    .tema-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #1e1e1e;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    /* Estilo ajustado para o patrimônio, estilo Sobre Nós */
+
+    .patrimonio-container {
+      background: rgba(30, 30, 30, 0.85);
+      padding: 40px;
+      border-radius: 12px;
+      max-width: 900px;
+      margin: 40px auto 60px;
+      box-shadow: 0 0 15px red, 0 0 20px red;
+      animation: pulsarRGB 3s infinite;
+      color: white;
+      text-align: center;
+    }
+
+    .patrimonio-container:hover {
+      animation: pulsarHover 3s infinite;
+    }
+
+    .patrimonio-container h1 {
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+    }
+
+    .colunas-patrimonio {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .coluna {
+      flex: 1 1 250px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: inset 0 0 10px #ff0000aa;
+      text-align: left;
+      min-width: 220px;
+    }
+
+    .coluna h3 {
+      border-bottom: 2px solid #ff0000;
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+    }
+
+    .item-conta {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 1.1rem;
+      border-bottom: 1px solid #ff000055;
+    }
+
+    .item-conta:last-child {
+      border-bottom: none;
+    }
+
+    .valor {
+      font-weight: 700;
+      color: #ff5555;
+    }
+
+    .total-patrimonio {
+      margin-top: 20px;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #ff4444;
+      text-align: right;
+    }
+
+    @media (max-width: 768px) {
+      .colunas-patrimonio {
+        flex-direction: column;
+        gap: 25px;
+      }
+    }
+
+    /* Animações mantidas do seu código original */
+
+    @keyframes pulsarRGB {
+      0% { box-shadow: 0 0 15px red, 0 0 20px red; }
+      25% { box-shadow: 0 0 15px orange, 0 0 20px orange; }
+      50% { box-shadow: 0 0 15px yellow, 0 0 20px yellow; }
+      75% { box-shadow: 0 0 15px green, 0 0 20px green; }
+      100% { box-shadow: 0 0 15px blue, 0 0 20px blue; }
+    }
+
+    @keyframes pulsarHover {
+      0% { box-shadow: 0 0 15px pink, 0 0 20px pink; }
+      25% { box-shadow: 0 0 15px purple, 0 0 20px purple; }
+      50% { box-shadow: 0 0 15px blue, 0 0 20px blue; }
+      75% { box-shadow: 0 0 15px cyan, 0 0 20px cyan; }
+      100% { box-shadow: 0 0 15px lime, 0 0 20px lime; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Menu lateral -->
+  <nav id="menuLateral" class="menu-lateral hidden" aria-label="Menu de navegação">
+    <img class="logo" src="{% static 'images/gptgenio.png' %}" alt="Logo RGT" />
+    <button class="botao-menu" onclick="location.href='{% url 'home' %}'">
+      <i data-feather="home"></i> Home
+    </button>
+    <button class="botao-menu" onclick="location.href='{% url 'contas' %}'">
+      <i data-feather="plus-circle"></i> Criar Contas
+    </button>
+    <button class="botao-menu" onclick="location.href='{% url 'lancamento' %}'">
+      <i data-feather="clipboard"></i> Lançamento
+    </button>
+        <button class="botao-menu" onclick="location.href= '{% url 'are' %}'"><i data-feather="bar-chart-2"></i><span> Lançamento ARE</span></button>
+    {% if request.user|has_group:"administrador" %}
+      <button class="botao-menu" onclick="location.href= '{% url 'dre' %}'"><i data-feather="pie-chart"></i><span> DRE</span></button>
+      <button class="botao-menu" onclick="location.href= '{% url 'livro_diario' %}'"><i data-feather="book"></i><span> Livro Diario</span></button>
+      <button class="botao-menu" onclick="location.href= '{% url 'livro_razao' %}'"><i data-feather="book-open"></i><span> Livro Razão</span></button>
+    {% endif %}
+    <button class="botao-menu" onclick="location.href='{% url 'contato' %}'">
+      <i data-feather="mail"></i> Contato
+    </button>
+  </nav>
+
+  <!-- Botões para menu e tema -->
+  <button id="toggleBtn" class="toggle-btn" aria-label="Alternar menu lateral">☰</button>
+  <button id="temaBtn" class="tema-btn" aria-label="Alternar tema">🌙</button>
+
+  <!-- Conteúdo principal -->
+  <main class="conteudo" id="conteudoPrincipal" tabindex="-1" role="main" aria-labelledby="tituloPatrimonio">
+    <div class="patrimonio-container" role="region" aria-live="polite" aria-atomic="true">
+      <h1 id="tituloPatrimonio" class="titulo-patrimonio">Balanço Patrimonial</h1>
+      
+      {% if balanco_equilibrado %}
+        <div class="mensagem-sucesso" role="alert" aria-live="polite" style="color:green; font-weight:bold; margin-bottom: 1rem;">
+          O balanço está equilibrado ✅
+        </div>
+      {% else %}
+        <div class="mensagem-erro" role="alert" aria-live="polite" style="color:red; font-weight:bold; margin-bottom: 1rem;">
+          Atenção: o balanço não está equilibrado ❌
+        </div>
+      {% endif %}
+
+      <div class="colunas-patrimonio">
+        <!-- Ativo -->
+        <section class="coluna" aria-labelledby="ativoTitle">
+          <h3 id="ativoTitle">Ativo</h3>
+          {% if contas_por_tipo.ativo %}
+            {% for conta in contas_por_tipo.ativo %}
+              <div class="item-conta">
+                <span>{{ conta.nome }}</span>
+                <span class="valor">R$ {{ conta.saldo_calc|floatformat:2 }}</span>
+              </div>
+            {% empty %}
+              <p>Nenhuma conta de ativo cadastrada.</p>
+            {% endfor %}
+            <div class="total-patrimonio">Total Ativo: R$ {{ totais.ativo|floatformat:2 }}</div>
+          {% else %}
+            <p>Nenhuma conta de ativo cadastrada.</p>
+          {% endif %}
+        </section>
+
+        <!-- Passivo -->
+        <section class="coluna" aria-labelledby="passivoTitle">
+          <h3 id="passivoTitle">Passivo</h3>
+          {% if contas_por_tipo.passivo %}
+            {% for conta in contas_por_tipo.passivo %}
+              <div class="item-conta">
+                <span>{{ conta.nome }}</span>
+                <span class="valor">R$ {{ conta.saldo_calc|floatformat:2 }}</span>
+              </div>
+            {% empty %}
+              <p>Nenhuma conta de passivo cadastrada.</p>
+            {% endfor %}
+            <div class="total-patrimonio">Total Passivo: R$ {{ totais.passivo|floatformat:2 }}</div>
+          {% else %}
+            <p>Nenhuma conta de passivo cadastrada.</p>
+          {% endif %}
+        </section>
+
+        <!-- Patrimônio Líquido -->
+        <section class="coluna" aria-labelledby="plTitle">
+          <h3 id="plTitle">Patrimônio Líquido</h3>
+          {% if contas_por_tipo.patrimonio_liquido %}
+            {% for conta in contas_por_tipo.patrimonio_liquido %}
+              <div class="item-conta">
+                <span>{{ conta.nome }}</span>
+                <span class="valor">R$ {{ conta.saldo_calc|floatformat:2 }}</span>
+              </div>
+            {% empty %}
+              <p>Nenhuma conta de patrimônio líquido cadastrada.</p>
+            {% endfor %}
+            <div class="total-patrimonio">Total PL: R$ {{ totais.patrimonio_liquido|floatformat:2 }}</div>
+          {% else %}
+            <p>Nenhuma conta de patrimônio líquido cadastrada.</p>
+          {% endif %}
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Feather icons
+    feather.replace();
+
+    // Toggle menu lateral
+    const toggleBtn = document.getElementById('toggleBtn');
+    const menuLateral = document.getElementById('menuLateral');
+
+    toggleBtn.addEventListener('click', () => {
+      menuLateral.classList.toggle('hidden');
+      if (!menuLateral.classList.contains('hidden')) {
+        menuLateral.querySelector('.botao-menu').focus();
+      } else {
+        toggleBtn.focus();
+      }
+    });
+
+    // Tema escuro/claro
+    const temaBtn = document.getElementById('temaBtn');
+    const body = document.body;
+
+    temaBtn.addEventListener('click', () => {
+      if(body.style.backgroundColor === 'var(--cor-fundo-claro)'){
+        // volta para escuro
+        body.style.backgroundColor = 'var(--cor-fundo-escuro)';
+        body.style.color = 'var(--cor-texto-escuro)';
+        temaBtn.textContent = '🌙';
+      } else {
+        // modo claro
+        body.style.backgroundColor = 'var(--cor-fundo-claro)';
+        body.style.color = 'var(--cor-texto-claro)';
+        temaBtn.textContent = '☀️';
+      }
+    });
+  </script>
+</body>
+</html>

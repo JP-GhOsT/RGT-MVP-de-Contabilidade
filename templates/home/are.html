@@ -1,0 +1,436 @@
+{% load static %}
+{% load user_groups %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lançamento ARE - RGT</title>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    :root {
+      --cor-fundo-escuro: #000000;
+      --cor-texto-escuro: #ffffff;
+      --cor-fundo-claro: #ffffff;
+      --cor-texto-claro: #1e1e1e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Inter, sans-serif;
+      background-color: var(--cor-fundo-escuro);
+      color: var(--cor-texto-escuro);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .layout {
+      display: flex;
+      flex: 1;
+      width: 100%;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .menu-lateral {
+      background-color: #000000;
+      color: white;
+      width: 300px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 2;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 1;
+      overflow-y: auto;
+    }
+
+    .menu-lateral.hidden {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+
+    .fechar-menu {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .botao {
+      background: #191919;
+      border: none;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+      margin-bottom: 5px;
+    }
+
+    .botao:hover {
+      background: #444;
+    }
+
+    .submenu {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-left: 10px;
+      width: 100%;
+    }
+
+    .submenu.mostrar {
+      display: flex;
+    }
+
+    .logo {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo img {
+      max-width: 250px;
+      height: auto;
+    }
+
+    .conteudo {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+      overflow-y: auto;
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #1e1e1e;
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 3;
+    }
+    
+    .toggle-btn.hide {
+      display: none;
+    }
+
+    .tema-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #1e1e1e;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .formulario {
+      background-color: rgba(30, 30, 30, 0.9);
+      padding: 30px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 1000px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      border: 1px solid #444;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #1e1e1e;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      background-color: #1e1e1e;
+      color: white;
+    }
+
+    input::placeholder {
+      color: #aaa;
+    }
+
+    .botoes {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    /* Tema Claro */
+    body.modo-claro {
+      background-color: var(--cor-fundo-claro);
+      color: var(--cor-texto-claro);
+    }
+
+    body.modo-claro .formulario {
+      background-color: rgba(255, 255, 255, 0.95);
+      color: #000;
+    }
+
+    body.modo-claro .menu-lateral {
+      color: #1e1e1e;
+    }
+
+    body.modo-claro .botao {
+      background: #ddd;
+      color: #1e1e1e;
+    }
+
+    body.modo-claro .botao:hover {
+      background: #ccc;
+    }
+
+    @media (max-width: 768px) {
+      .menu-lateral {
+        width: 100%;
+      }
+
+      .formulario {
+        padding: 20px;
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="menu-lateral hidden" id="menuLateral">
+      <button class="fechar-menu" onclick="toggleMenu()">
+        <i data-feather="x"></i>
+      </button>
+      <div class="logo">
+        <img src="{% static 'images/gptgenio.png' %}" alt="Logo" />
+      </div>
+
+      <a href="{% url 'home' %}" class="botao"><i data-feather="home"></i>&nbsp;Home</a>
+      <button class="botao" onclick="toggleFerramentas()"><i data-feather="tool"></i>&nbsp;Ferramentas</button>
+      <div id="submenuFerramentas" class="submenu">
+        <button class="botao" onclick="location.href= '{% url 'contas' %}'"><i data-feather="plus-circle"></i><span> Criar Contas</span></button>
+        <button class="botao" onclick="location.href= '{% url 'lancamento' %}'"><i data-feather="clipboard"></i><span> Lançamento</span></button>
+        {% if request.user|has_group:"administrador" %}
+        <button class="botao" onclick="location.href= '{% url 'dre' %}'"><i data-feather="pie-chart"></i><span> DRE</span></button>
+        <button class="botao" onclick="location.href= '{% url 'balanco' %}'"><i data-feather="archive"></i><span> Balanço Patrimonial</span></button>
+        <button class="botao" onclick="location.href= '{% url 'livro_diario' %}'"><i data-feather="book"></i><span> Livro Diario</span></button>
+        <button class="botao" onclick="location.href= '{% url 'livro_razao' %}'"><i data-feather="book-open"></i><span> Livro Razão</span></button>
+        {% endif %}
+      </div>
+      <a href="https://www.youtube.com/@RGT.tech12" class="botao" target="_blank" rel="noopener"><i data-feather="play-circle"></i>&nbsp;Tutorial</a>
+      <a href="{% url 'contato' %}" class="botao"><i data-feather="mail"></i>&nbsp;Contato</a>
+    </nav>
+
+    <main class="conteudo">
+      <button id="toggleBtn" class="toggle-btn" onclick="toggleMenu()">☰</button>
+      <button id="temaBtn" class="tema-btn" onclick="alternarTema()">🌙</button>
+
+      <div class="formulario">
+        <h2>Lançamento ARE - Apuração do Resultado do Exercício</h2>
+        <table id="tabelaARE">
+          <thead>
+            <tr>
+              <th>Conta (ARE)</th>
+              <th>Descrição</th>
+              <th>Valor</th>
+              <th>Data</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody id="corpoTabela"></tbody>
+        </table>
+        <div class="botoes">
+          <button class="botao" onclick="adicionarLinha()">Adicionar Lançamento</button>
+          <button id="confirmarBtn" class="botao" onclick="registrarLancamentos()">Confirmar Todos</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    feather.replace();
+
+    const menuLateral = document.getElementById('menuLateral');
+    const toggleBtn = document.getElementById('toggleBtn');
+    const submenuFerramentas = document.getElementById('submenuFerramentas');
+    const temaBtn = document.getElementById('temaBtn');
+    const confirmarBtn = document.getElementById('confirmarBtn');
+
+    function toggleMenu() {
+      const menu = document.getElementById("menuLateral");
+      const btn = document.getElementById("toggleBtn");
+      menu.classList.toggle("hidden");
+      btn.classList.toggle("hide");
+    }
+
+    function toggleFerramentas() {
+      submenuFerramentas.classList.toggle('mostrar');
+    }
+
+    function alternarTema() {
+      document.body.classList.toggle('modo-claro');
+      temaBtn.textContent = document.body.classList.contains('modo-claro') ? '🌞' : '🌙';
+    }
+
+    function getCSRFToken() {
+      const name = "csrftoken";
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.startsWith(name + "=")) {
+          return decodeURIComponent(cookie.substring(name.length + 1));
+        }
+      }
+      return "";
+    }
+
+    function adicionarLinha() {
+      const tbody = document.getElementById("corpoTabela");
+      const linha = document.createElement("tr");
+      linha.innerHTML = `
+        <td><select required><option value="">Carregando...</option></select></td>
+        <td><input type="text" placeholder="Descrição" required></td>
+        <td><input type="number" step="0.01" placeholder="Valor" required></td>
+        <td><input type="date" required></td>
+        <td><button class="botao" onclick="removerLinha(this)">Remover</button></td>`;
+      tbody.appendChild(linha);
+      carregarContasSelect(linha.querySelector("select"));
+    }
+
+    function removerLinha(botao) {
+      const linha = botao.closest("tr");
+      linha.remove();
+    }
+
+    // Busca contas ARE para o select (exemplo: só contas de resultado)
+    function carregarContasSelect(selectElement) {
+      confirmarBtn.disabled = true;  // desabilita botão enquanto carrega contas
+      fetch("/api/contas_are/")
+        .then(response => response.json())
+        .then(data => {
+          selectElement.innerHTML = "<option value=''>Selecione uma conta ARE</option>";
+          data.forEach(conta => {
+            const option = document.createElement("option");
+            option.value = conta.id;
+            option.textContent = `${conta.codigo} - ${conta.nome}`;
+            selectElement.appendChild(option);
+          });
+          confirmarBtn.disabled = false; // habilita botão depois de carregar
+        })
+        .catch(err => {
+          console.error("Erro ao carregar contas ARE:", err);
+          selectElement.innerHTML = "<option value=''>Erro ao carregar</option>";
+          confirmarBtn.disabled = false; // habilita mesmo em erro para permitir tentar novamente
+        });
+    }
+
+    function registrarLancamentos() {
+      const linhas = document.querySelectorAll("#corpoTabela tr");
+      if (linhas.length === 0) {
+        alert("Adicione pelo menos um lançamento.");
+        return;
+      }
+
+      const lancamentos = [];
+      for (const linha of linhas) {
+        const select = linha.querySelector("select");
+        const descricao = linha.querySelector("input[type='text']");
+        const valor = linha.querySelector("input[type='number']");
+        const data = linha.querySelector("input[type='date']");
+
+        if (!select.value || select.value === "undefined" || !descricao.value.trim() || !valor.value || !data.value) {
+          alert("Preencha todos os campos corretamente.");
+          return;
+        }
+
+        lancamentos.push({
+          conta: parseInt(select.value),
+          descricao: descricao.value.trim(),
+          valor: parseFloat(valor.value),
+          data: data.value
+        });
+      }
+
+      fetch("/lancamentos_are/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCSRFToken(),
+        },
+        body: JSON.stringify({ lancamentos })
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          return response.json().then(err => {
+            throw new Error(err.detail || 'Erro desconhecido');
+          });
+        }
+      })
+      .then(json => {
+        alert(json.detail);
+        document.getElementById("corpoTabela").innerHTML = "";
+      })
+      .catch(error => {
+        alert("Erro: " + error.message);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      adicionarLinha();
+    });
+  </script>
+</body>
+</html>

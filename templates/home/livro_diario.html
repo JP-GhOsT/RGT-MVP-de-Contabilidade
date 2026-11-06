@@ -1,0 +1,420 @@
+{% load static %}
+{% load user_groups %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Livro Diário - RGT</title>
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <style>
+    :root {
+      --cor-fundo-escuro: #000000;
+      --cor-texto-escuro: #ffffff;
+      --cor-fundo-claro: #ffffff;
+      --cor-texto-claro: #1e1e1e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, sans-serif;
+      background-color: var(--cor-fundo-escuro);
+      color: var(--cor-texto-escuro);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .layout {
+      display: flex;
+      flex: 1;
+      width: 100%;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .menu-lateral {
+      background-color: #000000;
+      background-size: cover;
+      color: white;
+      width: 300px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 2;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 1;
+      overflow-y: auto;
+    }
+
+    .menu-lateral.hidden {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+
+    .fechar-menu {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 3;
+    }
+    
+    .botao-menu {
+      background: #191919;
+      border: none;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      text-align: left;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.3s ease;
+      margin-bottom: 8px;
+    }
+
+    .botao-menu:hover {
+      background: #333333;
+    }
+
+    .botao-menu i {
+      height: 1em;
+      vertical-align: middle;
+    }
+
+    .botao {
+      background: #191919;
+      border: none;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      text-align: center;
+      width: 100%;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 5px;
+    }
+
+    .botao:hover {
+      background: #444;
+      animation: glow 2s infinite;
+    }
+
+    .botao i {
+      vertical-align: middle;
+      margin-right: 8px;
+      height: 1em;
+    }
+
+    .botao-container {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    .submenu {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-left: 10px;
+      width: 100%;
+    }
+
+    .submenu.mostrar {
+      display: flex;
+    }
+
+    .logo {
+      width: 100%;
+      height: auto;
+      margin-top: -30px;
+      margin-bottom: -50px;
+    }
+
+    .conteudo {
+      flex: 1;
+      overflow-y: auto;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      position: relative;
+    }
+
+    .logo-topo {
+      width: 300px;
+      height: auto;
+      margin-top: 20px;
+      margin-bottom: -50px;
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #1e1e1e;
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 3;
+      transition: background 0.3s;
+    }
+
+    .toggle-btn:hover {
+      background-color: #444;
+      transform: scale(1.1);
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .toggle-btn.hide {
+      display: none;
+    }
+
+    .tema-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #1e1e1e;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    /* Estilo ajustado para o Livro Diário */
+
+    .livro-diario-container {
+      background: rgba(30, 30, 30, 0.85);
+      padding: 40px;
+      border-radius: 12px;
+      max-width: 900px;
+      margin: 40px auto 60px;
+      box-shadow: 0 0 15px blue, 0 0 20px blue;
+      animation: pulsarRGB 3s infinite;
+      color: white;
+      text-align: center;
+    }
+
+    .livro-diario-container:hover {
+      animation: pulsarHover 3s infinite;
+    }
+
+    .livro-diario-container h1 {
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+    }
+
+    .colunas-livro-diario {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .coluna {
+      flex: 1 1 250px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: inset 0 0 10px #ff0000aa;
+      text-align: left;
+      min-width: 220px;
+    }
+
+    .coluna h3 {
+      border-bottom: 2px solid #ff0000;
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+    }
+
+    .item-diario {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 1.1rem;
+      border-bottom: 1px solid #ff000055;
+    }
+
+    .item-diario:last-child {
+      border-bottom: none;
+    }
+
+    .valor {
+      font-weight: 700;
+      color: #ff5555;
+    }
+
+    .total-livro-diario {
+      margin-top: 20px;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #ff4444;
+      text-align: right;
+    }
+
+    @media (max-width: 768px) {
+      .colunas-livro-diario {
+        flex-direction: column;
+        gap: 25px;
+      }
+    }
+
+    /* Animações do código original */
+
+    @keyframes pulsarRGB {
+      0% { box-shadow: 0 0 15px blue, 0 0 20px blue; }
+      25% { box-shadow: 0 0 15px green, 0 0 20px green; }
+      50% { box-shadow: 0 0 15px yellow, 0 0 20px yellow; }
+      75% { box-shadow: 0 0 15px orange, 0 0 20px orange; }
+      100% { box-shadow: 0 0 15px red, 0 0 20px red; }
+    }
+
+    @keyframes pulsarHover {
+      0% { box-shadow: 0 0 15px pink, 0 0 20px pink; }
+      25% { box-shadow: 0 0 15px purple, 0 0 20px purple; }
+      50% { box-shadow: 0 0 15px blue, 0 0 20px blue; }
+      75% { box-shadow: 0 0 15px cyan, 0 0 20px cyan; }
+      100% { box-shadow: 0 0 15px lime, 0 0 20px lime; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Menu lateral -->
+  <nav id="menuLateral" class="menu-lateral hidden" aria-label="Menu de navegação">
+    <img class="logo" src="{% static 'images/gptgenio.png' %}" alt="Logo RGT" />
+    <button class="botao-menu" onclick="location.href='{% url 'home' %}'">
+      <i data-feather="home"></i> Home
+    </button>
+    <button class="botao-menu" onclick="location.href='{% url 'contas' %}'">
+      <i data-feather="plus-circle"></i> Criar Contas
+    </button>
+    <button class="botao-menu" onclick="location.href='{% url 'lancamento' %}'">
+      <i data-feather="clipboard"></i> Lançamento
+    </button>
+        <button class="botao-menu" onclick="location.href= '{% url 'are' %}'"><i data-feather="bar-chart-2"></i><span> Lançamento ARE</span></button>
+    {% if request.user|has_group:"administrador" %}
+      <button class="botao-menu" onclick="location.href= '{% url 'dre' %}'"><i data-feather="pie-chart"></i><span> DRE</span></button>
+      <button class="botao-menu" onclick="location.href= '{% url 'balanco' %}'"><i data-feather="archive"></i><span> Balanço Patrimonial</span></button>
+      <button class="botao-menu" onclick="location.href= '{% url 'livro_razao' %}'"><i data-feather="book-open"></i><span> Livro Razão</span></button>
+    {% endif %}
+    <button class="botao-menu" onclick="location.href='{% url 'contato' %}'">
+      <i data-feather="mail"></i> Contato
+    </button>
+  </nav>
+
+  <!-- Botões para menu e tema -->
+  <button id="toggleBtn" class="toggle-btn" aria-label="Alternar menu lateral">☰</button>
+  <button id="temaBtn" class="tema-btn" aria-label="Alternar tema">🌙</button>
+
+  <!-- Conteúdo principal -->
+  <main class="conteudo" id="conteudoPrincipal" tabindex="-1" role="main" aria-labelledby="tituloLivroDiario">
+    <div class="livro-diario-container" role="region" aria-live="polite" aria-atomic="true">
+      <h1 id="tituloLivroDiario" class="titulo-livro-diario">Livro Diário</h1>
+      <div class="colunas-livro-diario">
+        <!-- Lançamentos -->
+        <section class="coluna" aria-labelledby="lancamentosTitle">
+          <h3 id="lancamentosTitle">Lançamentos</h3>
+          {% if lancamentos %}
+            {% for lancamento in lancamentos %}
+              <div class="item-diario">
+                <span><strong>{{ lancamento.data }}</strong></span><br>
+                <span><strong>Conta:</strong> {{ lancamento.conta }}</span><br>
+                <span><strong>Tipo:</strong> {{ lancamento.tipo|title }}</span><br>
+                <span><strong>Descrição:</strong> {{ lancamento.descricao }}</span><br>
+                <span class="valor"><strong>Valor:</strong> R$ {{ lancamento.valor|floatformat:2 }}</span>
+              </div>
+            {% empty %}
+              <p>Nenhum lançamento registrado.</p>
+            {% endfor %}
+            <div class="total-livro-diario">Total: R$ {{ total_lancamentos|floatformat:2 }}</div>
+          {% else %}
+            <p>Nenhum lançamento registrado.</p>
+          {% endif %}
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Feather icons
+    feather.replace();
+
+    // Toggle menu lateral
+    const toggleBtn = document.getElementById('toggleBtn');
+    const menuLateral = document.getElementById('menuLateral');
+
+    toggleBtn.addEventListener('click', () => {
+      menuLateral.classList.toggle('hidden');
+      if (!menuLateral.classList.contains('hidden')) {
+        menuLateral.querySelector('.botao-menu').focus();
+      } else {
+        toggleBtn.focus();
+      }
+    });
+
+    // Tema escuro/claro
+    const temaBtn = document.getElementById('temaBtn');
+    const body = document.body;
+
+    temaBtn.addEventListener('click', () => {
+      if(body.style.backgroundColor === 'var(--cor-fundo-claro)'){
+        // volta para escuro
+        body.style.backgroundColor = 'var(--cor-fundo-escuro)';
+        body.style.color = 'var(--cor-texto-escuro)';
+        temaBtn.textContent = '🌙';
+      } else {
+        // modo claro
+        body.style.backgroundColor = 'var(--cor-fundo-claro)';
+        body.style.color = 'var(--cor-texto-claro)';
+        temaBtn.textContent = '☀️';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Perfil</title>
+
+    <style>
+        :root {
+            --background: #ffffff;
+            --background-secondary: #f9f9f9;
+            --text: #333333;
+            --accent: #007bff;
+            --accent-hover: #0056b3;
+        }
+
+        [data-theme="dark"] {
+            --background: #121212;
+            --background-secondary: #1e1e1e;
+            --text: #f0f0f0;
+            --accent: #007bff;
+            --accent-hover: #0056b3;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--accent);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .form-container {
+            max-width: 700px;
+            margin: 50px auto;
+            background-color: var(--background-secondary);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input, textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: 100%;
+            background-color: var(--background);
+            color: var(--text);
+        }
+
+        input[type="file"] {
+            padding: 5px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .buttons button, .buttons a {
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .save-button {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .save-button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .cancel-button {
+            background-color: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+        }
+
+        .cancel-button:hover {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            background-color: white;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--accent);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Editar Perfil</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/perfil/">Perfil</a>
+            <a href="/logout/">Sair</a>
+            <button class="theme-toggle" onclick="toggleTheme()">🌗 Tema</button>
+        </nav>
+    </header>
+
+    <div class="form-container">
+        <h2>Atualize seus dados</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <label for="first_name">Nome</label>
+            <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}">
+
+            <label for="last_name">Sobrenome</label>
+            <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}">
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}">
+
+            <label for="bio">Biografia</label>
+            <textarea id="bio" name="bio" rows="4">{{ user.profile.bio }}</textarea>
+
+            <label for="avatar">Foto de Perfil</label>
+            <input type="file" id="avatar" name="avatar">
+
+            <div class="buttons">
+                <button type="submit" class="save-button">Salvar</button>
+                <a href="/perfil/" class="cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+        });
+    </script>
+
+</body>
+</html>

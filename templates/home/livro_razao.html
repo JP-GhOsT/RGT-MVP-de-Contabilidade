@@ -1,0 +1,284 @@
+{% load static %}
+{% load user_groups %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Livro Razão - RGT</title>
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <style>
+    :root {
+      --cor-fundo-escuro: #000000;
+      --cor-texto-escuro: #ffffff;
+      --cor-fundo-claro: #ffffff;
+      --cor-texto-claro: #1e1e1e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: Inter, sans-serif;
+      background-color: var(--cor-fundo-escuro);
+      color: var(--cor-texto-escuro);
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .menu-lateral {
+      background-color: #000;
+      color: white;
+      width: 300px;
+      padding: 20px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      z-index: 2;
+      overflow-y: auto;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .menu-lateral.hidden {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+
+    .botao-menu {
+      background: #191919;
+      border: none;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .botao-menu:hover {
+      background: #333;
+    }
+
+    .conteudo {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .livro-razao-container {
+      background: rgba(30,30,30,0.9);
+      padding: 40px;
+      border-radius: 12px;
+      max-width: 900px;
+      width: 100%;
+      box-shadow: 0 0 15px red, 0 0 20px red;
+      animation: pulsarRGB 3s infinite;
+      color: white;
+      text-align: center;
+    }
+
+    .livro-razao-container:hover {
+      animation: pulsarHover 3s infinite;
+    }
+
+    .livro-razao-container h1 {
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+    }
+
+    .colunas-livro-razao {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+    }
+
+    .coluna-livro-razao {
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: inset 0 0 10px #ff000088;
+      min-width: 250px;
+      flex: 1;
+    }
+
+    .coluna-livro-razao h3 {
+      font-size: 1.5rem;
+      border-bottom: 2px solid #ff0000;
+      margin-bottom: 15px;
+      padding-bottom: 5px;
+    }
+
+    .item-livro-razao {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #ff000044;
+      padding: 6px 0;
+      font-size: 1.1rem;
+    }
+
+    .valor {
+      font-weight: bold;
+      color: #ff5555;
+    }
+
+    .paginas-livro-razao {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .botao-paginacao {
+      background: #191919;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .botao-paginacao:hover {
+      background: #444;
+    }
+
+    .toggle-btn, .tema-btn {
+      position: fixed;
+      top: 20px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      border: none;
+      z-index: 3;
+      cursor: pointer;
+      background: #1e1e1e;
+      color: white;
+    }
+
+    .toggle-btn { left: 20px; }
+    .tema-btn { right: 20px; }
+
+    @keyframes pulsarRGB {
+      0% { box-shadow: 0 0 15px red, 0 0 20px red; }
+      25% { box-shadow: 0 0 15px orange, 0 0 20px orange; }
+      50% { box-shadow: 0 0 15px yellow, 0 0 20px yellow; }
+      75% { box-shadow: 0 0 15px green, 0 0 20px green; }
+      100% { box-shadow: 0 0 15px blue, 0 0 20px blue; }
+    }
+
+    @keyframes pulsarHover {
+      0% { box-shadow: 0 0 15px pink, 0 0 20px pink; }
+      25% { box-shadow: 0 0 15px purple, 0 0 20px purple; }
+      50% { box-shadow: 0 0 15px blue, 0 0 20px blue; }
+      75% { box-shadow: 0 0 15px cyan, 0 0 20px cyan; }
+      100% { box-shadow: 0 0 15px lime, 0 0 20px lime; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Menu lateral -->
+   <nav id="menuLateral" class="menu-lateral hidden" aria-label="Menu de navegação">
+    <img class="logo" src="{% static 'images/gptgenio.png' %}" alt="Logo RGT" />
+    <button class="botao-menu" onclick="location.href='{% url 'home' %}'">
+      <i data-feather="home"></i> Home
+    </button>
+    <button class="botao-menu" onclick="location.href='{% url 'contas' %}'">
+      <i data-feather="plus-circle"></i> Criar Contas
+    </button>
+    <button class="botao-menu" onclick="location.href='{% url 'lancamento' %}'">
+      <i data-feather="clipboard"></i> Lançamento
+    </button>
+        <button class="botao-menu" onclick="location.href= '{% url 'are' %}'"><i data-feather="bar-chart-2"></i><span> Lançamento ARE</span></button>
+    {% if request.user|has_group:"administrador" %}
+      <button class="botao-menu" onclick="location.href= '{% url 'dre' %}'"><i data-feather="pie-chart"></i><span> DRE</span></button>
+      <button class="botao-menu" onclick="location.href= '{% url 'balanco' %}'"><i data-feather="archive"></i><span> Balanço Patrimonial</span></button>
+      <button class="botao-menu" onclick="location.href= '{% url 'livro_diario' %}'"><i data-feather="book"></i><span> Livro Diario</span></button>
+    {% endif %}
+    <button class="botao-menu" onclick="location.href='{% url 'contato' %}'">
+      <i data-feather="mail"></i> Contato
+    </button>
+  </nav>
+
+  <button id="toggleBtn" class="toggle-btn">☰</button>
+  <button id="temaBtn" class="tema-btn">🌙</button>
+
+  <!-- Conteúdo principal -->
+  <main class="conteudo">
+    <div class="livro-razao-container">
+      <h1>Livro Razão</h1>
+
+      <div class="colunas-livro-razao">
+        {% for conta in contas %}
+          <section class="coluna-livro-razao">
+            <h3>{{ conta.nome }}</h3>
+            {% for item in conta.itens_lancamento.all|dictsort:"lancamento.data" %}
+              <div class="item-livro-razao">
+                <span>{{ item.lancamento.data|date:"d/m/Y" }}</span>
+                <span>{{ item.lancamento.descricao }}</span>
+                <span class="valor">
+                  {% if item.tipo == 'debito' %}
+                    Débito: R$ {{ item.valor|floatformat:2 }}
+                  {% else %}
+                    Crédito: R$ {{ item.valor|floatformat:2 }}
+                  {% endif %}
+                </span>
+              </div>
+            {% empty %}
+              <p>Sem lançamentos.</p>
+            {% endfor %}
+        {% endfor %}    
+      </div>
+
+      <!-- Paginação -->
+      <div class="paginas-livro-razao">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}">
+            <button class="botao-paginacao">« Anterior</button>
+          </a>
+        {% endif %}
+        <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}">
+            <button class="botao-paginacao">Próxima »</button>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+
+  <script>
+    feather.replace();
+
+    const toggleBtn = document.getElementById('toggleBtn');
+    const menuLateral = document.getElementById('menuLateral');
+
+    toggleBtn.addEventListener('click', () => {
+      menuLateral.classList.toggle('hidden');
+    });
+
+    document.getElementById('temaBtn').addEventListener('click', () => {
+      document.body.classList.toggle('tema-claro');
+    });
+  </script>
+</body>
+</html>

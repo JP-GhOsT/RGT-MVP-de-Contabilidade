@@ -1,0 +1,241 @@
+:root {
+  --cor-fundo-escuro: #1e1e1e;
+  --cor-texto-escuro: #ffffff;
+  --cor-fundo-claro: #ffffff;
+  --cor-texto-claro: #1e1e1e;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Inter, sans-serif;
+  background-color: var(--cor-fundo-escuro);
+  color: var(--cor-texto-escuro);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.layout {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.menu-lateral {
+  background: url('https://img.freepik.com/vetores-gratis/fundo-gradiente-preto-com-texturas-douradas_23-2149154119.jpg') no-repeat center center;
+  background-size: cover;
+  color: white;
+  width: 300px;
+  min-width: 280px;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 2;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+}
+
+.menu-lateral.hidden {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.fechar-menu {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.botao {
+  background: #333131;
+  border: none;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 1rem;
+  text-align: center;
+  width: 100%;
+  text-decoration: none;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.botao:hover {
+  background: #444;
+}
+
+.botao.rgb-glow {
+  animation: glow 2s infinite;
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 5px red; }
+  25% { box-shadow: 0 0 10px orange; }
+  50% { box-shadow: 0 0 15px lime; }
+  75% { box-shadow: 0 0 10px cyan; }
+  100% { box-shadow: 0 0 5px red; }
+}
+
+.botao i {
+  vertical-align: middle;
+  margin-right: 8px;
+  height: 1em;
+}
+
+.botao-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  position: absolute;
+  bottom: 40px;
+  left: 20px;
+  right: 20px;
+  z-index: 3;
+  gap: 10px;
+}
+
+.botao-container .botao {
+  width: 48%;
+}
+
+.submenu {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  margin-left: 10px;
+  width: 100%;
+}
+
+.submenu.mostrar {
+  display: flex;
+}
+
+.logo {
+  width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.conteudo {
+  flex: 1;
+  background: url('https://img.freepik.com/vetores-gratis/fundo-gradiente-preto-com-texturas-douradas_23-2149154119.jpg') no-repeat center center;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+  position: relative;
+}
+
+.logo-topo {
+  width: 150px;
+  height: auto;
+  margin-top: 40px;
+}
+
+.toggle-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: #1e1e1e;
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.toggle-btn.hide {
+  display: none;
+}
+
+.tema-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #1e1e1e;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.caixa-texto {
+  background: rgba(30, 30, 30, 0.85);
+  color: white;
+  padding: 40px;
+  border-radius: 12px;
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.caixa-texto h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.caixa-texto p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .menu-lateral {
+    width: 100%;
+    min-width: unset;
+    padding: 20px;
+  }
+
+  .caixa-texto {
+    padding: 20px;
+  }
+
+  .caixa-texto h2 {
+    font-size: 1.5rem;
+  }
+
+  .caixa-texto p {
+    font-size: 1rem;
+  }
+
+  .botao-container {
+    flex-direction: column;
+    gap: 10px;
+    bottom: 20px;
+  }
+
+  .botao-container .botao {
+    width: 100%;
+  }
+}

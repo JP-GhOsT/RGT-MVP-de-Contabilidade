@@ -1,0 +1,395 @@
+{% load static %}
+{% load user_groups %}
+
+<!DOCTYPE html>
+
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sobre Nós - RGT</title>
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <style>
+    :root {
+      --cor-fundo-escuro: #000000;
+      --cor-texto-escuro: #ffffff;
+      --cor-fundo-claro: #ffffff;
+      --cor-texto-claro: #1e1e1e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, sans-serif;
+      background-color: var(--cor-fundo-escuro);
+      color: var(--cor-texto-escuro);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .layout {
+      display: flex;
+      flex: 1;
+      width: 100%;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .menu-lateral {
+      background-color: #000000;
+      background-size: cover;
+      color: white;
+      width: 300px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 2;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 1;
+      overflow-y: auto;
+    }
+
+    .menu-lateral.hidden {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+
+    .fechar-menu {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .botao {
+      background: #191919;
+      border: none;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      text-align: center;
+      width: 100%;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 5px;
+    }
+
+    .botao:hover {
+      background: #444;
+      animation: glow 2s infinite;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 5px red; }
+      25% { box-shadow: 0 0 10px orange; }
+      50% { box-shadow: 0 0 15px lime; }
+      75% { box-shadow: 0 0 10px cyan; }
+      100% { box-shadow: 0 0 5px red; }
+    }
+
+    .botao i {
+      vertical-align: middle;
+      margin-right: 8px;
+      height: 1em;
+    }
+
+    .botao-container {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    .submenu {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-left: 10px;
+      width: 100%;
+    }
+
+    .submenu.mostrar {
+      display: flex;
+    }
+
+    .logo {
+      width: 100%;
+      height: auto;
+      margin-top: -30px;
+      margin-bottom: -50px;
+    }
+
+    .conteudo {
+      flex: 1;
+      overflow-y: auto;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      position: relative;
+    }
+
+    .logo-topo {
+      width: 300px;
+      height: auto;
+      margin-top: 20px;
+      margin-bottom: -50px;
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #1e1e1e;
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 3;
+      transition: background 0.3s;
+    }
+
+    .toggle-btn:hover {
+      background-color: #444;
+      transform: scale(1.1);
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .toggle-btn.hide {
+      display: none;
+    }
+
+    .tema-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #1e1e1e;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .caixa-texto {
+      background: rgba(30, 30, 30, 0.85);
+      color: white;
+      padding: 40px;
+      border-radius: 12px;
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
+      margin-top: 30px;
+      position: relative;
+      box-shadow: 0 0 15px red, 0 0 20px red;
+      animation: pulsarRGB 3s infinite;
+      transition: box-shadow 0.5s ease;
+    }
+
+    .caixa-texto:hover {
+      animation: pulsarHover 3s infinite;
+    }
+
+    @keyframes pulsarRGB {
+      0% { box-shadow: 0 0 15px red, 0 0 20px red; }
+      25% { box-shadow: 0 0 15px orange, 0 0 20px orange; }
+      50% { box-shadow: 0 0 15px yellow, 0 0 20px yellow; }
+      75% { box-shadow: 0 0 15px green, 0 0 20px green; }
+      100% { box-shadow: 0 0 15px blue, 0 0 20px blue; }
+    }
+
+    @keyframes pulsarHover {
+      0% { box-shadow: 0 0 15px pink, 0 0 20px pink; }
+      25% { box-shadow: 0 0 15px purple, 0 0 20px purple; }
+      50% { box-shadow: 0 0 15px blue, 0 0 20px blue; }
+      75% { box-shadow: 0 0 15px cyan, 0 0 20px cyan; }
+      100% { box-shadow: 0 0 15px lime, 0 0 20px lime; }
+    }
+
+    .caixa-texto h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    .caixa-texto p {
+      font-size: 1.2rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .menu-lateral {
+        width: 100%;
+        min-width: unset;
+        padding: 20px;
+      }
+
+      .caixa-texto {
+        padding: 20px;
+      }
+
+      .caixa-texto h2 {
+        font-size: 1.5rem;
+      }
+
+      .caixa-texto p {
+        font-size: 1rem;
+      }
+
+      .login-botao {
+        width: 100%;
+        margin-bottom: 0;
+      }
+    }
+    .toggle-btn:hover {
+      background-color: #444;
+      transform: scale(1.1);
+      transition: background-color 0.3s, transform 0.2s;
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <div id="menuLateral" class="menu-lateral hidden">
+      <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+      <img class="logo" src="{% static 'images/gptgenio.png' %}" alt="Logo RGT" />
+      <button class="botao" onclick="toggleFerramentas()">
+        <i data-feather="tool"></i><span> Ferramentas</span>
+      </button>
+      <div id="submenuFerramentas" class="submenu">
+        <button class="botao" onclick="location.href= '{% url 'contas' %}'"><i data-feather="plus-circle"></i><span> Criar Contas</span></button>
+        <button class="botao" onclick="location.href= '{% url 'are' %}'"><i data-feather="bar-chart-2"></i><span> Lançamento ARE</span></button>
+        <button class="botao" onclick="location.href= '{% url 'lancamento' %}'"><i data-feather="clipboard"></i><span> Lançamento</span></button>
+        {% if request.user|has_group:"administrador" %}
+        <button class="botao" onclick="location.href= '{% url 'dre' %}'"><i data-feather="pie-chart"></i><span> DRE</span></button>
+        <button class="botao" onclick="location.href= '{% url 'balanco' %}'"><i data-feather="archive"></i><span> Balanço Patrimonial</span></button>
+        <button class="botao" onclick="location.href= '{% url 'livro_diario' %}'"><i data-feather="book"></i><span> Livro Diario</span></button>
+        <button class="botao" onclick="location.href= '{% url 'livro_razao' %}'"><i data-feather="book-open"></i><span> Livro Razão</span></button>
+        {% endif %}
+      </div>
+      <a class="botao" href="https://www.youtube.com/@RGT.tech12">
+        <i data-feather="play-circle"></i><span> Tutorial</span>
+      </a>
+      <button class="botao" onclick="location.href='{% url 'contato' %}'">
+        <i data-feather="mail"></i><span> Contato</span>
+      </button>
+      {% if user.is_authenticated %}
+      <button class="botao" onclick="location.href='{% url 'perfil' %}'">
+        <i data-feather="users"></i><span> Perfil</span>
+      </button>
+      {% endif %}
+      {% if request.user|has_group:"administrador" %}
+      <a class="botao" href="/admin/">
+        <i data-feather="user-check"></i><span> Admin</span>
+      </a>
+      {% endif %} 
+      <div class="botao-container"> 
+        {% if user.is_authenticated %}
+          <button class="botao login-botao" onclick="location.href='{% url 'logout' %}'">
+            <i data-feather="log-out"></i><span> Sair</span>
+          </button>
+        {% else %}
+          <button class="botao login-botao" onclick="location.href='{% url 'login' %}'">
+            <i data-feather="user"></i><span> Fazer login</span>
+          </button>
+        {% endif %}
+      </div>
+    </div>
+
+
+<div class="conteudo">
+  <button id="toggleBtn" class="toggle-btn" onclick="toggleMenu()">☰</button>
+  <button id="temaBtn" class="tema-btn" onclick="alternarTema()">🌙</button>
+  <img class="logo-topo" src="{% static 'images/coala_teste.png' %}" alt="Logo RGT Topo" />
+  <div class="caixa-texto">
+    <h2>Sobre nós</h2>
+    <p>
+      A Revennue Generation Tracking é uma iniciativa de tecnologia dedicada em criar soluções para problemas.
+      Com inovação e tecnologia, oferecemos ferramentas inteligentes para transformar a contabilidade.
+      Nosso compromisso é proporcionar mais produtividade e precisão para nossos usuários.
+      <br /><br />
+      <strong>Revennue Generation Tracking – Tecnologia e Inovação para Contadores.</strong>
+    </p>
+  </div>
+</div>
+
+
+  </div>
+
+  <script>
+    feather.replace();
+
+    function toggleMenu() {
+      const menu = document.getElementById("menuLateral");
+      const btn = document.getElementById("toggleBtn");
+      menu.classList.toggle("hidden");
+      btn.classList.toggle("hide");
+    }
+
+    function toggleFerramentas() {
+      const submenu = document.getElementById("submenuFerramentas");
+      submenu.classList.toggle("mostrar");
+    }
+
+    function alternarTema() {
+      const body = document.body;
+      const caixaTexto = document.querySelector('.caixa-texto');
+      const temaBtn = document.getElementById("temaBtn");
+
+      const isClaro = body.style.backgroundColor === 'var(--cor-fundo-claro)' || body.style.backgroundColor === 'rgb(255, 255, 255)';
+
+      if (isClaro) {
+        body.style.backgroundColor = 'var(--cor-fundo-escuro)';
+        body.style.color = 'var(--cor-texto-escuro)';
+        caixaTexto.style.backgroundColor = 'rgba(30, 30, 30, 0.85)';
+        caixaTexto.style.color = '#fff';
+        temaBtn.textContent = '🌙';
+      } else {
+        body.style.backgroundColor = 'var(--cor-fundo-claro)';
+        body.style.color = 'var(--cor-texto-claro)';
+        caixaTexto.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+        caixaTexto.style.color = '#000';
+        temaBtn.textContent = '☀';
+      }
+    }
+  </script>
+
+</body>
+</html>

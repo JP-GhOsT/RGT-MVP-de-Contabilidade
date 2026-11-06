@@ -1,0 +1,397 @@
+{% load static %}
+{% load user_groups %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Criar Contas - RGT</title>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    /* === Seu CSS incorporado === */
+    :root {
+      --cor-fundo-escuro: #000000;
+      --cor-texto-escuro: #ffffff;
+      --cor-fundo-claro: #ffffff;
+      --cor-texto-claro: #1e1e1e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Inter, sans-serif;
+      background-color: var(--cor-fundo-escuro);
+      color: var(--cor-texto-escuro);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .layout {
+      display: flex;
+      flex: 1;
+      width: 100%;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .menu-lateral {
+      background-color: #000000;
+      background-size: cover;
+      color: white;
+      width: 300px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 2;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 1;
+      overflow-y: auto;
+    }
+
+    .menu-lateral.hidden {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+
+    .fechar-menu {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .botao {
+      background: #191919;
+      border: none;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      text-align: center;
+      width: 100%;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 5px;
+    }
+
+    .botao:hover {
+      background: #444;
+      animation: glow 2s infinite;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 5px red; }
+      25% { box-shadow: 0 0 10px orange; }
+      50% { box-shadow: 0 0 15px lime; }
+      75% { box-shadow: 0 0 10px cyan; }
+      100% { box-shadow: 0 0 5px red; }
+    }
+
+    .botao i {
+      vertical-align: middle;
+      margin-right: 8px;
+      height: 1em;
+    }
+
+    .submenu {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-left: 10px;
+      width: 100%;
+    }
+
+    .submenu.mostrar {
+      display: flex;
+    }
+
+    .logo {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo img {
+      max-width: 250px;
+      height: auto;
+    }
+
+    .conteudo {
+      flex: 1;
+      overflow-y: auto;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      position: relative;
+    }
+
+
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #1e1e1e;
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 3;
+      transition: background 0.3s;
+    }
+
+    .toggle-btn:hover {
+      background-color: #444;
+      transform: scale(1.1);
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .toggle-btn.hide {
+      display: none;
+    }
+
+    .tema-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #1e1e1e;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    /* Form container */
+    .form-container {
+      background: rgba(30, 30, 30, 0.85);
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .form-container h2 {
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 2rem;
+    }
+
+    form label {
+      display: block;
+      margin: 10px 0 5px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    form input, form select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 15px;
+      font-size: 1rem;
+      background-color: #222;
+      color: white;
+    }
+
+    form input::placeholder {
+      color: #aaa;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-submit:hover {
+      background-color: #45a049;
+    }
+
+    /* Tema claro */
+    body.modo-claro {
+      background-color: var(--cor-fundo-claro);
+      color: var(--cor-texto-claro);
+    }
+
+    body.modo-claro .form-container {
+      background-color: rgba(255, 255, 255, 0.95);
+      color: #000;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    body.modo-claro .menu-lateral {
+      color: #1e1e1e;
+    }
+
+    body.modo-claro .botao {
+      background: #ddd;
+      color: #1e1e1e;
+    }
+
+    body.modo-claro .botao:hover {
+      background: #ccc;
+      animation: none;
+      box-shadow: none;
+    }
+
+    @media (max-width: 768px) {
+      .menu-lateral {
+        width: 100%;
+        min-width: unset;
+      }   
+
+      .form-container {
+        padding: 20px;
+        width: 90%;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <nav class="menu-lateral hidden" id="menuLateral">
+      <button class="fechar-menu" onclick="toggleMenu()">
+        <i data-feather="x"></i>
+      </button>
+      <div class="logo">
+        <img src="{% static 'images/gptgenio.png' %}" alt="Logo" />
+      </div>
+
+      <a href="{% url 'home' %}" class="botao">
+        <i data-feather="home"></i><span> Home</span>
+      </a>
+
+      <button class="botao" onclick="toggleFerramentas()">
+        <i data-feather="tool"></i><span> Ferramentas</span>
+      </button>
+
+      <div id="submenuFerramentas" class="submenu">
+        <button class="botao" onclick="location.href= '{% url 'lancamento' %}'"><i data-feather="clipboard"></i><span> Lançamento</span></button>
+        <button class="botao" onclick="location.href= '{% url 'are' %}'"><i data-feather="bar-chart-2"></i><span> Lançamento ARE</span></button>
+        {% if request.user|has_group:"administrador" %}
+          <button class="botao" onclick="location.href= '{% url 'dre' %}'"><i data-feather="pie-chart"></i><span> DRE</span></button>
+          <button class="botao" onclick="location.href= '{% url 'balanco' %}'"><i data-feather="archive"></i><span> Balanço Patrimonial</span></button>
+          <button class="botao" onclick="location.href= '{% url 'livro_diario' %}'"><i data-feather="book"></i><span> Livro Diario</span></button>
+          <button class="botao" onclick="location.href= '{% url 'livro_razao' %}'"><i data-feather="book-open"></i><span> Livro Razão</span></button>
+        {% endif %}
+      </div>
+
+      <a href="https://www.youtube.com/@RGT.tech12" class="botao" target="_blank" rel="noopener">
+        <i data-feather="play-circle"></i><span> Tutorial</span>
+      </a>
+
+      <button class="botao" onclick="location.href='{% url 'contato' %}'">
+        <i data-feather="mail"></i><span> Contato</span>
+      </button>
+    </nav>
+
+    <main class="conteudo">
+      <button id="toggleBtn" class="toggle-btn" onclick="toggleMenu()">☰</button>
+      <button id="temaBtn" class="tema-btn" onclick="alternarTema()">🌙</button>
+
+      <div class="form-container" id="formContainer">
+        <h2>Criar Nova Conta</h2>
+        <form method="POST">
+          {% csrf_token %}
+          
+          <label for="codigo">Código:</label>
+          <input type="text" name="codigo" id="codigo" placeholder="Ex: 1.01" required />
+        
+          <label for="nome">Nome:</label>
+          <input type="text" name="nome" id="nome" placeholder="Nome da conta" required />
+        
+          <label for="tipo">Tipo:</label>
+            <select name="tipo" id="tipo" required>
+              <option value="" disabled selected>Selecione o tipo</option>
+              <option value="ativo">Ativo</option>
+              <option value="passivo">Passivo</option>
+              <option value="patrimonio_liquido">Patrimônio Líquido</option>
+              <option value="custo">Custo</option>
+              <option value="despesa">Despesa</option>
+              <option value="'receita'">Receita</option>              
+            </select>       
+          <button type="submit" class="btn-submit">Criar Conta</button>
+        </form>        
+      </div>     
+    </main>
+  </div>
+
+  <script>
+    // Feather Icons init
+    feather.replace();
+
+    const menuLateral = document.getElementById('menuLateral');
+    const toggleBtn = document.getElementById('toggleBtn');
+    const submenuFerramentas = document.getElementById('submenuFerramentas');
+    const temaBtn = document.getElementById('temaBtn');
+
+    function toggleMenu() {
+      if (menuLateral.classList.contains('hidden')) {
+        menuLateral.classList.remove('hidden');
+        toggleBtn.classList.add('hide');
+      } else {
+        menuLateral.classList.add('hidden');
+        toggleBtn.classList.remove('hide');
+        submenuFerramentas.classList.remove('mostrar'); // fecha submenu ao fechar menu
+      }
+    }
+
+    function toggleFerramentas() {
+      submenuFerramentas.classList.toggle('mostrar');
+    }
+
+    // Alternar tema claro/escuro
+    function alternarTema() {
+      document.body.classList.toggle('modo-claro');
+      if(document.body.classList.contains('modo-claro')) {
+        temaBtn.textContent = '🌞';
+      } else {
+        temaBtn.textContent = '🌙';
+      }
+    }
+  </script>
+</body>
+</html>

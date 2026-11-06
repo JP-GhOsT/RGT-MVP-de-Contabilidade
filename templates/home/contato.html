@@ -1,0 +1,406 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contato - RGT</title>
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <style>
+    :root {
+      --cor-fundo-escuro: #000000;
+      --cor-texto-escuro: #ffffff;
+      --cor-fundo-claro: #ffffff;
+      --cor-texto-claro: #1e1e1e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Inter, sans-serif;
+      background-color: var(--cor-fundo-escuro);
+      color: var(--cor-texto-escuro);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .layout {
+      display: flex;
+      flex: 1;
+      width: 100%;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .menu-lateral {
+      background-color: #000000;
+      background-size: cover;
+      color: white;
+      width: 300px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 2;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 1;
+      overflow-y: auto;
+    }
+
+    .menu-lateral.hidden {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+
+    .fechar-menu {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .botao {
+      background: #191919;
+      border: none;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      text-align: center;
+      width: 100%;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 5px;
+    }
+
+    .botao:hover {
+      background: #444;
+      animation: glow 2s infinite;
+    }
+
+    .foto-membro {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 10px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.15);
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 5px red; }
+      25% { box-shadow: 0 0 10px orange; }
+      50% { box-shadow: 0 0 15px lime; }
+      75% { box-shadow: 0 0 10px cyan; }
+      100% { box-shadow: 0 0 5px red; }
+    }
+
+    .botao i {
+      vertical-align: middle;
+      margin-right: 8px;
+      height: 1em;
+    }
+
+    .logo {
+      width: 100%;
+      height: auto;
+      margin-top: -30px;
+      margin-bottom: -50px;
+    }
+
+    .conteudo {
+      flex: 1;
+      overflow-y: auto;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      position: relative;
+    }
+
+    .logo-topo {
+      width: 220px;
+      height: auto;
+      margin-top: 40px;
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #1e1e1e;
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .toggle-btn.hide {
+      display: none;
+    }
+
+    .tema-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #1e1e1e;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .caixa-texto {
+      background: rgba(30, 30, 30, 0.85);
+      color: white;
+      padding: 40px;
+      border-radius: 12px;
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .caixa-texto h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    .caixa-texto p {
+      font-size: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .equipe {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .membro {
+      background: rgba(30, 30, 30, 0.7);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      width: 200px;
+    }
+
+    .membro h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .membro a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .membro i {
+      margin-right: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .menu-lateral {
+        width: 100%;
+        min-width: unset;
+        padding: 20px;
+      }
+
+      .caixa-texto {
+        padding: 20px;
+      }
+
+      .caixa-texto h2 {
+        font-size: 1.5rem;
+      }
+
+      .caixa-texto p {
+        font-size: 1rem;
+      }
+    }
+    .toggle-btn:hover {
+      background-color: #444;
+      transform: scale(1.1);
+      transition: background-color 0.3s, transform 0.2s;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div id="menuLateral" class="menu-lateral hidden">
+      <button class="fechar-menu" onclick="toggleMenu()">✕</button>
+      <img class="logo" src="{% static 'images/gptgenio.png' %}" alt="Logo RGT" />
+        <a href="{% url 'home' %}" class="botao">
+            <i data-feather="home"></i><span> Home</span>
+        </a>
+        <a class="botao" href="https://www.youtube.com/@RGT.tech12">
+            <i data-feather="play-circle"></i><span> Tutorial</span>
+        </a>
+    </div>
+
+    <div class="conteudo">
+      <button id="toggleBtn" class="toggle-btn" onclick="toggleMenu()">☰</button>
+      <button id="temaBtn" class="tema-btn" onclick="alternarTema()">🌙</button>
+      <div class="caixa-texto">
+        <h2>Nosso Time</h2>
+        <p>
+          Conheça nossa equipe de especialistas que está pronta para transformar a contabilidade com inovação e tecnologia.
+        </p>
+      </div>
+
+    <div class="equipe">
+        <div class="membro">
+          <img 
+            src="{% static 'images/sena.jpg' %}" 
+            onerror="this.onerror=null;this.src='{% static 'images/avatar-placeholder.png' %}';" 
+            alt="Foto do Sena" 
+            class="foto-membro">
+          <h3>Full Stack</h3>
+          <h4>Gustavo Sena</h4>
+          <a href="https://www.linkedin.com/in/gustavo-sena-75b768326?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank"><i data-feather="linkedin"></i>LinkedIn</a><br />
+          <a href="mailto:fullstack1@email.com"><i data-feather="mail"></i>Email</a>
+        </div>
+      
+        <div class="membro">
+          <img 
+            src="{% static 'images/JP.jpg' %}" 
+            onerror="this.onerror=null;this.src='{% static 'images/avatar-placeholder.png' %}';" 
+            alt="Foto do JP" 
+            class="foto-membro">
+          <h3>Full Stack</h3>
+          <h4>João Paulo Z. Matsui</h4>
+          <a href="https://www.linkedin.com/in/joao-matsui?/" target="_blank"><i data-feather="linkedin"></i>LinkedIn</a><br />
+          <a href="mailto:fullstack2@email.com"><i data-feather="mail"></i>Email</a>
+        </div>
+      
+        <div class="membro">
+          <img 
+            src="{% static 'images/wesley.jpg' %}" 
+            onerror="this.onerror=null;this.src='{% static 'images/avatar-placeholder.png' %}';" 
+            alt="Foto do Wesley" 
+            class="foto-membro">
+          <h3>Frontend</h3>
+          <h4>Wesley Almeida</h4>
+          <a href="https://www.linkedin.com/in/wesley-alsantos?/" target="_blank"><i data-feather="linkedin"></i>LinkedIn</a><br />
+          <a href="mailto:frontend@email.com"><i data-feather="mail"></i>Email</a>
+        </div>
+      
+        <div class="membro">
+          <img 
+            src="{% static 'images/caio.jpg' %}" 
+            onerror="this.onerror=null;this.src='{% static 'images/avatar-placeholder.png' %}';" 
+            alt="Foto do Caio" 
+            class="foto-membro">
+          <h3>Backend</h3>
+          <h4>Caio Gregorio</h4>
+          <a href="https://www.linkedin.com/in/caio-gregorio-7378a2294?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" target="_blank"><i data-feather="linkedin"></i>LinkedIn</a><br />
+          <a href="mailto:backend1@email.com"><i data-feather="mail"></i>Email</a>
+        </div>
+      
+        <div class="membro">
+          <img 
+            src="{% static 'images/diego.jpg' %}" 
+            onerror="this.onerror=null;this.src='{% static 'images/avatar-placeholder.png' %}';" 
+            alt="Foto do Diego" 
+            class="foto-membro">
+          <h3>Backend</h3>
+          <h4>Diego Mathias</h4>
+          <a href="https://www.linkedin.com/in/diego-mathias-da-fonseca-222204326?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" target="_blank"><i data-feather="linkedin"></i>LinkedIn</a><br />
+          <a href="mailto:backend2@email.com"><i data-feather="mail"></i>Email</a>
+        </div>
+      
+        <div class="membro">
+          <img 
+            src="{% static 'images/robson.jpg' %}" 
+            onerror="this.onerror=null;this.src='{% static 'images/avatar-placeholder.png' %}';" 
+            alt="Foto do Robson" 
+            class="foto-membro">
+          <h3>QA</h3>
+          <h4>Robson Damasceno</h4>
+          <a href="https://www.linkedin.com/in/robson-damasceno-b35954356?/" target="_blank"><i data-feather="linkedin"></i>LinkedIn</a><br />
+          <a href="mailto:qa@email.com"><i data-feather="mail"></i>Email</a>
+        </div>
+      
+        <div class="membro">
+          <img 
+            src="{% static 'images/felype.jpg' %}" 
+            onerror="this.onerror=null;this.src='{% static 'images/avatar-placeholder.png' %}';" 
+            alt="Foto do Felype" 
+            class="foto-membro">
+          <h3>DBA</h3>
+          <h4>Felype Silveira</h4>
+          <a href="https://www.linkedin.com/in/felypedantas?/" target="_blank"><i data-feather="linkedin"></i>LinkedIn</a><br />
+          <a href="mailto:felype.dantas@fatec.sp.gov.br"><i data-feather="mail"></i>Email</a>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <script>
+    feather.replace();
+
+    function toggleMenu() {
+      const menu = document.getElementById("menuLateral");
+      const btn = document.getElementById("toggleBtn");
+      menu.classList.toggle("hidden");
+      btn.classList.toggle("hide");
+    }
+
+    function alternarTema() {
+      const body = document.body;
+      const caixaTexto = document.querySelector('.caixa-texto');
+      const temaBtn = document.getElementById("temaBtn");
+
+      const isClaro = body.style.backgroundColor === 'var(--cor-fundo-claro)' || body.style.backgroundColor === 'rgb(255, 255, 255)';
+
+      if (isClaro) {
+        body.style.backgroundColor = 'var(--cor-fundo-escuro)';
+        body.style.color = 'var(--cor-texto-escuro)';
+        caixaTexto.style.backgroundColor = 'rgba(30, 30, 30, 0.85)';
+        caixaTexto.style.color = '#fff';
+        temaBtn.textContent = '🌙';
+      } else {
+        body.style.backgroundColor = 'var(--cor-fundo-claro)';
+        body.style.color = 'var(--cor-texto-claro)';
+        caixaTexto.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+        caixaTexto.style.color = '#000';
+        temaBtn.textContent = '☀';
+      }
+    }
+  </script>
+</body>
+</html>
